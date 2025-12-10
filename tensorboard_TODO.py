@@ -1,0 +1,146 @@
+import os
+import torch
+import torch.nn as nn
+import numpy as np
+import matplotlib.pyplot as plt
+
+from datetime import datetime
+from typing import Optional
+from logger import Logger
+from utils import TaskType
+from torch.utils.tensorboard import SummaryWriter
+
+
+class TensorboardLogger(Logger):
+
+    def __init__(
+        self, 
+        task: TaskType, 
+    ):
+        # Define the folder where we will store all the tensorboard logs
+        logdir = os.path.join("logs", f"{task}-{datetime.now().strftime('%Y%m%d-%H%M%S')}")
+
+        # TODO: Initialize Tensorboard Writer with the previous folder 'logdir'
+        self.writer = SummaryWriter(log_dir=logdir)
+
+
+    def log_reconstruction_training(
+        self, 
+        model: nn.Module, 
+        epoch: int, 
+        train_loss_avg: np.ndarray,
+        val_loss_avg: np.ndarray,
+        reconstruction_grid: Optional[torch.Tensor] = None,
+    ):
+
+        # TODO: Log train reconstruction loss to tensorboard.
+        #  Tip: use "Reconstruction/train_loss" as tag
+        self.writer.add_scalar("Reconstruction/train_loss", float(train_loss_avg), epoch)
+
+
+        # TODO: Log validation reconstruction loss to tensorboard.
+        #  Tip: use "Reconstruction/val_loss" as tag
+        self.writer.add_scalar("Reconstruction/val_loss", float(val_loss_avg), epoch)
+
+
+        # TODO: Log a batch of reconstructed images from the validation set.
+        #  Use the reconstruction_grid variable returned above.
+        self.writer.add_image("Reconstruction/images", reconstruction_grid, epoch)
+
+
+        # TODO: Log the weights values and grads histograms.
+        #  Tip: use f"{name}/value" and f"{name}/grad" as tags
+        for name, weight in model.encoder.named_parameters():
+            # Weight values histogram
+            self.writer.add_histogram(f"{name}/value", weight.detach().cpu(), epoch)
+
+            # Weight gradients histogram (if exists)
+            if weight.grad is not None:
+                self.writer.add_histogram(f"{name}/grad", weight.grad.detach().cpu(), epoch)
+
+
+        pass
+
+
+
+    def log_classification_training(
+        self, 
+        epoch: int,
+        train_loss_avg: np.ndarray,
+        val_loss_avg: np.ndarray,
+        train_acc_avg: np.ndarray,
+        val_acc_avg: np.ndarray,
+        fig: plt.Figure,
+    ):
+        # TODO: Log confusion matrix figure to tensorboard
+        self.writer.add_figure("Classification/confusion_matrix", fig, epoch)
+
+        # TODO: Log validation loss to tensorboard.
+        #  Tip: use "Classification/val_loss" as tag
+        self.writer.add_scalar("Classification/val_loss", float(val_loss_avg), epoch)
+
+
+        # TODO: Log validation accuracy to tensorboard.
+        #  Tip: use "Classification/val_acc" as tag
+        self.writer.add_scalar("Classification/val_acc", float(val_acc_avg), epoch)
+
+
+        # TODO: Log training loss to tensorboard.
+        #  Tip: use "Classification/train_loss" as tag
+        self.writer.add_scalar("Classification/train_loss", float(train_loss_avg), epoch)
+
+        # TODO: Log training accuracy to tensorboard.
+        #  Tip: use "Classification/train_acc" as tag
+        self.writer.add_scalar("Classification/train_acc", float(train_acc_avg), epoch)
+
+
+        pass
+
+
+    def log_model_graph(
+        self, 
+        model: nn.Module, 
+        train_loader: torch.utils.data.DataLoader,
+    ):
+        batch, _ = next(iter(train_loader))
+        """
+        TODO:
+        We are going to log the graph of the model to Tensorboard. For that, we need to
+        provide an instance of the model and a batch of images, like you'd
+        do in a forward pass.
+        """       
+        try:
+            self.writer.add_graph(model, batch)
+        except Exception as e:
+            print(f" Could not log model graph: {e}")
+
+
+
+    def log_embeddings(
+        self, 
+        model: nn.Module, 
+        train_loader: torch.utils.data.DataLoader,
+    ):
+        list_latent = []
+        list_images = []
+        for i in range(10):
+            batch, _ = next(iter(train_loader))
+
+            # forward batch through the encoder
+            list_latent.append(model.encoder(batch))
+            list_images.append(batch)
+
+        latent = torch.cat(list_latent)
+        images = torch.cat(list_images)
+
+        # TODO: Log latent representations (embeddings) with their corresponding labels (images)
+        # images_2d = images.view(images.size(0), -1)
+        self.writer.add_embedding(
+            latent,
+            metadata=None,
+            label_img=images,
+            tag="LatentSpace"
+        )
+        print("ℹEmbeddings logged")
+        # Be patient! Projector logs can take a while
+
