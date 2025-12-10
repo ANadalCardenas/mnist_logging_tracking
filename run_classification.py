@@ -6,8 +6,8 @@ import torch.nn as nn
 from time import time
 from typing import Tuple
 
-from tensorboard_TODO import TensorboardLogger
-from wandb_TODO import WandbLogger
+from tensorboard import TensorboardLogger
+from wandb import WandbLogger
 from argparse import Namespace
 
 import matplotlib.pyplot as plt

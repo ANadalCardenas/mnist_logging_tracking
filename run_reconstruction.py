@@ -8,8 +8,8 @@ from typing import Tuple
 from utils import DatasetType, LoggerType
 from argparse import Namespace
 
-from tensorboard_TODO import TensorboardLogger
-from wandb_TODO import WandbLogger
+from tensorboard import TensorboardLogger
+from wandb import WandbLogger
 
 
 def forward_image(

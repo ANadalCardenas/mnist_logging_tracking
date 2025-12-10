@@ -23,7 +23,7 @@ class WandbLogger(Logger):
         wandb.init(project="hands-on-monitoring")
         wandb.run.name = f'{task}-{datetime.now().strftime("%Y%m%d-%H%M%S")}'
 
-        # TODO: Log weights and gradients to wandb. Doc: https://docs.wandb.ai/ref/python/watch
+        
         for name, param in model.named_parameters():
          if "weight" in name or "bias" in name:
             wandb.log({f"Weights/{name}": wandb.Histogram(param.detach().cpu())}, step=100)
@@ -37,15 +37,9 @@ class WandbLogger(Logger):
         reconstruction_grid: Optional[torch.Tensor] = None,
     ):
 
-        # TODO: Log train reconstruction loss to wandb
+       
         wandb.log({"Reconstruction/train_loss": train_loss_avg}, step=epoch)
-
-
-        # TODO: Log validation reconstruction loss to wandb
         wandb.log({"Reconstruction/val_loss": val_loss_avg}, step=epoch)
-
-
-        # TODO: Log a batch of reconstructed images from the validation set
         wandb.log({"Reconstruction/images": wandb.Image(reconstruction_grid)}, step=epoch)
 
         pass
@@ -60,25 +54,11 @@ class WandbLogger(Logger):
         val_acc_avg: float, 
         fig: plt.Figure,
     ):
-        # TODO: Log confusion matrix figure to wandb
+        
         wandb.log({"Classification/confusion_matrix": wandb.Image(fig)}, step=epoch)
-
-
-        # TODO: Log validation loss to wandb
-        #  Tip: use the tag 'Classification/val_loss'
         wandb.log({"Classification/val_loss": val_loss_avg}, step=epoch)
-
-        # TODO: Log validation accuracy to wandb
-        #  Tip: use the tag 'Classification/val_acc'
         wandb.log({"Classification/val_acc": val_acc_avg}, step=epoch)
-
-        # TODO: Log training loss to wandb
-        #  Tip: use the tag 'Classification/train_loss'
         wandb.log({"Classification/train_loss": train_loss_avg}, step=epoch)
-
-
-        # TODO: Log train accuracy to wandb
-        #  Tip: use the tag 'Classification/train_acc'
         wandb.log({"Classification/train_acc": train_acc_avg}, step=epoch)
 
         pass
@@ -109,7 +89,6 @@ class WandbLogger(Logger):
                 list_dfs.append(df)
         embeddings = pd.concat(list_dfs, ignore_index=True)
 
-        # TODO: Log latent representations (embeddings)
         table = wandb.Table(dataframe=embeddings)
         wandb.log({"Embeddings/latent": table})
 

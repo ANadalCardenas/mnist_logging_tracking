@@ -33,23 +33,10 @@ class TensorboardLogger(Logger):
         reconstruction_grid: Optional[torch.Tensor] = None,
     ):
 
-        # TODO: Log train reconstruction loss to tensorboard.
-        #  Tip: use "Reconstruction/train_loss" as tag
+        
         self.writer.add_scalar("Reconstruction/train_loss", float(train_loss_avg), epoch)
-
-
-        # TODO: Log validation reconstruction loss to tensorboard.
-        #  Tip: use "Reconstruction/val_loss" as tag
         self.writer.add_scalar("Reconstruction/val_loss", float(val_loss_avg), epoch)
-
-
-        # TODO: Log a batch of reconstructed images from the validation set.
-        #  Use the reconstruction_grid variable returned above.
         self.writer.add_image("Reconstruction/images", reconstruction_grid, epoch)
-
-
-        # TODO: Log the weights values and grads histograms.
-        #  Tip: use f"{name}/value" and f"{name}/grad" as tags
         for name, weight in model.encoder.named_parameters():
             # Weight values histogram
             self.writer.add_histogram(f"{name}/value", weight.detach().cpu(), epoch)
@@ -72,25 +59,11 @@ class TensorboardLogger(Logger):
         val_acc_avg: np.ndarray,
         fig: plt.Figure,
     ):
-        # TODO: Log confusion matrix figure to tensorboard
+        
         self.writer.add_figure("Classification/confusion_matrix", fig, epoch)
-
-        # TODO: Log validation loss to tensorboard.
-        #  Tip: use "Classification/val_loss" as tag
         self.writer.add_scalar("Classification/val_loss", float(val_loss_avg), epoch)
-
-
-        # TODO: Log validation accuracy to tensorboard.
-        #  Tip: use "Classification/val_acc" as tag
         self.writer.add_scalar("Classification/val_acc", float(val_acc_avg), epoch)
-
-
-        # TODO: Log training loss to tensorboard.
-        #  Tip: use "Classification/train_loss" as tag
         self.writer.add_scalar("Classification/train_loss", float(train_loss_avg), epoch)
-
-        # TODO: Log training accuracy to tensorboard.
-        #  Tip: use "Classification/train_acc" as tag
         self.writer.add_scalar("Classification/train_acc", float(train_acc_avg), epoch)
 
 
@@ -103,12 +76,7 @@ class TensorboardLogger(Logger):
         train_loader: torch.utils.data.DataLoader,
     ):
         batch, _ = next(iter(train_loader))
-        """
-        TODO:
-        We are going to log the graph of the model to Tensorboard. For that, we need to
-        provide an instance of the model and a batch of images, like you'd
-        do in a forward pass.
-        """       
+             
         try:
             self.writer.add_graph(model, batch)
         except Exception as e:
@@ -133,7 +101,6 @@ class TensorboardLogger(Logger):
         latent = torch.cat(list_latent)
         images = torch.cat(list_images)
 
-        # TODO: Log latent representations (embeddings) with their corresponding labels (images)
         # images_2d = images.view(images.size(0), -1)
         self.writer.add_embedding(
             latent,
