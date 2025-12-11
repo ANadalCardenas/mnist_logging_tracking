@@ -34,29 +34,36 @@ main.py: orchestrator example for starting a training run
 
 ## Installation
 1. Create a virtual environment (recommended)
+```bash
 python3 -m venv venv
 source venv/bin/activate
-
+```
 2. Install requirements
+```bash
 pip install -r requirements.txt
-
-3. (Optional) Login to WandB
-
-If using Weights & Biases:
-
+```
+3. (Optional) Login to WandB:
+```bash
 wandb login
+```
 
 ## Usage
 ### Run a classification experiment
+```bash
 python run_classification.py
-
+```
 ### Run a reconstruction experiment
+```bash
 python run_reconstruction.py
+```
 
 ### Launch TensorBoard
+```bash
 tensorboard --logdir runs/
+```
 
 ## Project Structure
+```bash
 mnist_logging_tracking/
 ├── main.py
 ├── run_classification.py
@@ -68,3 +75,4 @@ mnist_logging_tracking/
 ├── tensorboard.py
 ├── requirements.txt
 ├── data/ (you must create this folder, dowload and save the MNIST dataset. https://www.kaggle.com/datasets/hojjatk/mnist-dataset)
+```
